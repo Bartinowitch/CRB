@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRB Dashboard &middot; SCHURTER R&D</title>
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif}
+:root{
+  --s-blue-dark:#1c3664;
+  --s-blue-mid:#1a5276;
+  --s-blue-light:#2e86c1;
+  --s-blue-pale:#d6eaf8;
+  --s-bg:#f4f6f8;
+  --s-text-primary:#1a1a2e;
+  --s-text-muted:#5d6d7e;
+  --s-border:#d5d8dc;
+  --s-red:#c0392b;
+  --s-green:#1e8449;
+  --s-amber:#b45309;
+  --s-amber-light:#fef3c7;
+  --s-red-light:#fde8e6;
+  --s-green-light:#eaf5ef;
+  --s-orange:#e8500a;
+  --s-orange-light:#fdf0ea;
+  --s-teal:#007a87;
+  --s-teal-light:#e5f4f5;
+  --s-purple:#5b21b6;
+  --s-purple-light:#f0ecfd;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--s-bg);color:var(--s-text-primary);font-size:13px;line-height:1.5}
+.topbar{background:var(--s-blue-dark);color:#fff;padding:0 32px;height:72px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;border-bottom:3px solid var(--s-blue-light)}
+.t-brand{display:flex;align-items:center;gap:20px}
+.t-logo img{height:36px;display:block;mix-blend-mode:screen}
+.t-divider{width:1px;height:36px;background:rgba(255,255,255,.25)}
+.t-title{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.01em}
+.t-sub{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.45);margin-top:2px}
+.t-right{display:flex;align-items:center;gap:10px}
+.t-ver{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.05em}
+.upbtn{font-family:'Segoe UI',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;border-radius:4px;border:1.5px solid rgba(255,255,255,.4);background:transparent;color:#fff;cursor:pointer;white-space:nowrap;transition:background .15s}
+.upbtn:hover{background:rgba(255,255,255,.12)}
+.upbtn.busy{opacity:.55;pointer-events:none}
+#fi{display:none}
+.subnav{background:#fff;border-bottom:2px solid var(--s-border);padding:0 28px;display:flex;overflow-x:auto;scrollbar-width:none;justify-content:space-between;align-items:center}
+.subnav::-webkit-scrollbar{display:none}
+.stabs{display:flex}
+.stab{font-family:'Segoe UI',sans-serif;font-size:12px;font-weight:600;padding:13px 16px;border:none;background:none;color:var(--s-text-muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s,border-color .15s}
+.stab:hover{color:var(--s-blue-dark)}
+.stab.active{color:var(--s-blue-dark);border-bottom-color:var(--s-blue-light)}
+.scnt{font-size:10px;font-weight:400;margin-left:4px;color:var(--s-text-muted)}
+.upbtn-nav{font-family:'Segoe UI',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:4px;border:1.5px solid var(--s-border);background:#fff;color:var(--s-blue-dark);cursor:pointer;margin:auto 0;white-space:nowrap}
+.upbtn-nav:hover{border-color:var(--s-blue-light);color:var(--s-blue-light)}
+.main{padding:20px 28px;max-width:1440px}
+.krow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--s-border);border-radius:8px;padding:16px 18px;border-top:3px solid var(--s-blue-light)}
+.kpi.kr{border-top-color:var(--s-red)}.kpi.ka{border-top-color:var(--s-amber)}.kpi.kg{border-top-color:var(--s-green)}.kpi.kt{border-top-color:var(--s-teal)}
+.kl{font-size:11px;font-weight:700;color:var(--s-text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kv{font-size:30px;font-weight:700;color:var(--s-blue-dark);line-height:1;margin-bottom:3px}
+.kpi.kr .kv{color:var(--s-red)}.kpi.ka .kv{color:var(--s-amber)}.kpi.kg .kv{color:var(--s-green)}.kpi.kt .kv{color:var(--s-teal)}
+.ks{font-size:11px;color:var(--s-text-muted)}
+.fstrip{background:#fff;border:1px solid var(--s-border);border-radius:8px;padding:10px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fgroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flbl{font-size:11px;font-weight:700;color:var(--s-text-muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.fb{font-family:'Segoe UI',sans-serif;font-size:11px;font-weight:600;padding:4px 10px;border-radius:4px;border:1.5px solid var(--s-border);background:#fff;color:var(--s-text-primary);cursor:pointer;transition:all .15s;white-space:nowrap}
+.fb:hover{border-color:var(--s-blue-light);color:var(--s-blue-light)}
+.fb.on{border-color:var(--s-blue-dark);color:#fff;background:var(--s-blue-dark)}
+.srch{font-family:'Segoe UI',sans-serif;font-size:12px;padding:5px 10px;border:1.5px solid var(--s-border);border-radius:4px;color:var(--s-text-primary);outline:none;width:190px;margin-left:auto}
+.srch:focus{border-color:var(--s-blue-light)}
+.fsel{font-family:'Segoe UI',sans-serif;font-size:12px;font-weight:600;padding:4px 8px;border:1.5px solid var(--s-border);border-radius:4px;color:var(--s-text-muted);background:#fff;cursor:pointer;outline:none;min-width:120px}
+.fsel:focus{border-color:var(--s-blue-light)}
+.fsel.active{border-color:var(--s-blue-light);color:var(--s-blue-dark);background:var(--s-blue-pale)}
+.card{background:#fff;border:1px solid var(--s-border);border-radius:8px;margin-bottom:14px;overflow:hidden}
+.ch{padding:10px 18px;border-bottom:1px solid var(--s-border);display:flex;align-items:center;justify-content:space-between;background:var(--s-bg)}
+.ct{font-size:11px;font-weight:700;color:var(--s-text-primary);text-transform:uppercase;letter-spacing:.05em}
+.cm{font-size:11px;color:var(--s-text-muted)}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--s-text-muted);padding:9px 13px;text-align:left;border-bottom:1px solid var(--s-border);background:#fafbfc;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f0f2f4;cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--s-blue-pale)}
+td{padding:9px 13px;vertical-align:middle}
+.nd td{text-align:center;color:var(--s-text-muted);font-style:italic;cursor:default}
+.nd:hover{background:none!important}
+.idc{font-size:11px;color:var(--s-text-muted);font-weight:700;white-space:nowrap}
+.dm{font-size:13px;font-weight:600;color:var(--s-text-primary)}
+.ds{font-size:11px;color:var(--s-text-muted);margin-top:1px}
+.badge{display:inline-block;font-family:'Segoe UI',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;letter-spacing:.03em}
+.b1{background:var(--s-red-light);color:var(--s-red)}
+.b2{background:var(--s-amber-light);color:var(--s-amber)}
+.b3{background:var(--s-blue-pale);color:var(--s-blue-dark)}
+.b4{background:var(--s-teal-light);color:var(--s-teal)}
+.b5{background:var(--s-purple-light);color:var(--s-purple)}
+.bgo{background:var(--s-green-light);color:var(--s-green)}
+.pw{display:flex;align-items:center;gap:7px}
+.pb{width:64px;height:5px;background:#e8eaed;border-radius:3px;overflow:hidden;flex-shrink:0}
+.pf{height:100%;border-radius:3px}
+.pp{font-size:11px;color:var(--s-text-muted);min-width:28px}
+.rc{display:flex;align-items:center;gap:5px}
+.rd2{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rlo{background:var(--s-green)}.rme{background:var(--s-amber)}.rhi{background:var(--s-red)}
+.rnhi{color:var(--s-red);font-weight:700;font-size:12px}
+.rnme{color:var(--s-amber);font-weight:700;font-size:12px}
+.rnlo{color:var(--s-green);font-weight:700;font-size:12px}
+.dc{font-size:11px;padding:2px 7px;border-radius:4px;display:inline-block;white-space:nowrap}
+.dok{background:var(--s-green-light);color:var(--s-green)}
+.dsn{background:var(--s-amber-light);color:var(--s-amber)}
+.dov{background:var(--s-red-light);color:var(--s-red)}
+.dno{background:var(--s-bg);color:var(--s-text-muted)}
+.cc{font-size:12px;font-weight:700;color:var(--s-text-primary);white-space:nowrap}
+.sec{display:none}.sec.active{display:block}
+.info-banner{background:var(--s-blue-pale);border:1.5px solid var(--s-blue-light);border-radius:8px;padding:10px 16px;font-size:12px;font-weight:600;color:var(--s-blue-dark);margin-bottom:14px}
+.alert{background:var(--s-orange-light);border:1.5px solid var(--s-orange);border-radius:8px;padding:10px 16px;font-size:12px;font-weight:700;color:var(--s-orange);margin-bottom:14px}
+.two{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px}
+.pchart{display:flex;gap:12px;align-items:flex-end;height:140px;padding:0 4px}
+.pcol{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.pbar{width:100%;border-radius:3px 3px 0 0;min-height:4px}
+.pval{font-size:11px;font-weight:700;color:var(--s-text-primary)}
+.plbl{font-size:9px;color:var(--s-text-muted);text-align:center;font-weight:700;text-transform:uppercase}
+.oc{font-size:11px;line-height:1.4}
+.om{font-weight:700;color:var(--s-text-primary)}
+.os{color:var(--s-text-muted)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,24,.5);z-index:300;justify-content:flex-end}
+.overlay.open{display:flex}
+.dp{width:500px;height:100vh;background:#fff;border-left:3px solid var(--s-blue-dark);overflow-y:auto;transform:translateX(100%);transition:transform .22s ease}
+.overlay.open .dp{transform:translateX(0)}
+.dph{background:var(--s-blue-dark);color:#fff;padding:20px 22px 16px;position:relative}
+.dpnum{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:6px;font-weight:700;letter-spacing:.05em}
+.dptit{font-size:17px;font-weight:700;line-height:1.3;padding-right:36px}
+.dpx{position:absolute;top:14px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.dpx:hover{background:rgba(255,255,255,.25)}
+.dpbdg{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.dpbody{padding:20px 22px}
+.dpsec{margin-bottom:18px}
+.dpst{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--s-blue-light);padding-bottom:6px;border-bottom:2px solid var(--s-blue-pale);margin-bottom:10px}
+.dpr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f2f4;gap:12px}
+.dpr:last-child{border-bottom:none}
+.dpk{font-size:12px;color:var(--s-text-muted);flex-shrink:0}
+.dpv{font-size:12px;font-weight:600;color:var(--s-text-primary);text-align:right}
+.dpa{background:var(--s-blue-pale);border-left:3px solid var(--s-blue-light);padding:10px 12px;font-size:12px;color:var(--s-text-primary);border-radius:0 4px 4px 0;margin-bottom:8px}
+.dpal{font-size:10px;font-weight:700;color:var(--s-blue-dark);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+@media(max-width:900px){.krow{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}.main{padding:14px}.topbar,.subnav{padding-left:14px;padding-right:14px}.dp{width:100vw}}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="t-brand">
+    <div class="t-logo">
+      <img src="data:image/png;base64,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" alt="SCHURTER" height="36">
+    </div>
+    <div class="t-divider"></div>
+    <div>
+      <div class="t-title">Change Review Board</div>
+    </div>
+  </div>
+  <div class="t-right">
+    <div id="tsub" class="t-ver">V2.0 &middot; 30.04.2026</div>
+    <input type="file" id="fi" accept=".csv">
+  </div>
+</div>
+
+<div class="subnav">
+  <div class="stabs">
+    <button class="stab active" onclick="showTab('overview',this)">Overview</button>
+    <button class="stab" onclick="showTab('decide',this)">Decide Today <span class="scnt" id="cnt-d"></span></button>
+    <button class="stab" onclick="showTab('risk',this)">High Risk <span class="scnt" id="cnt-hi"></span></button>
+    <button class="stab" onclick="showTab('safety',this)">Safety / Compliance <span class="scnt" id="cnt-s"></span></button>
+    <button class="stab" onclick="showTab('all',this)">All Active Changes</button>
+  </div>
+  <button class="upbtn-nav" id="ubtn" onclick="document.getElementById('fi').click()">&uarr; Upload CSV</button>
+</div>
+
+<div class="main">
+
+  <div class="krow">
+    <div class="kpi"><div class="kl">Active Changes</div><div class="kv" id="kv-a">&mdash;</div></div>
+    <div class="kpi kr"><div class="kl">High Risk</div><div class="kv" id="kv-r">&mdash;</div><div class="ks">Risk score &gt; 2.0</div></div>
+    <div class="kpi ka"><div class="kl">Decide Today</div><div class="kv" id="kv-d">&mdash;</div><div class="ks">&gt; CHF 20k or business critical</div></div>
+    <div class="kpi kg"><div class="kl">Avg. Progress</div><div class="kv" id="kv-p">&mdash;</div><div class="ks">All Go changes</div></div>
+    <div class="kpi kt"><div class="kl">Total Cost</div><div class="kv" id="kv-c">&mdash;</div><div class="ks">CHF all active Go changes</div></div>
+  </div>
+
+  <div class="fstrip" id="gfilter">
+    <div class="fgroup">
+      <span class="flbl">Priority</span>
+      <button class="fb on" onclick="gfilt('prio','all',this)">All</button>
+      <button class="fb" onclick="gfilt('prio','1',this)">Safety</button>
+      <button class="fb" onclick="gfilt('prio','2',this)">Quality</button>
+      <button class="fb" onclick="gfilt('prio','3',this)">Delivery</button>
+      <button class="fb" onclick="gfilt('prio','4',this)">Cost</button>
+      <button class="fb" onclick="gfilt('prio','5',this)">Growth</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+      <span class="flbl">PM</span>
+      <select class="fsel" id="pm-sel" onchange="gfiltSel('pm',this)"><option value="all">All PMs</option></select>
+      <span class="flbl">R&amp;D</span>
+      <select class="fsel" id="rd-sel" onchange="gfiltSel('rd',this)"><option value="all">All R&amp;D</option></select>
+      <input class="srch" id="gsrch" placeholder="Search&hellip;" oninput="render()">
+    </div>
+  </div>
+
+  <div class="sec active" id="s-overview">
+    <div class="alert" id="alert-box" style="display:none"></div>
+    <div class="two">
+      <div class="card">
+        <div class="ch"><div class="ct" style="font-size:14px;font-weight:700;text-transform:none;letter-spacing:0">Priority Distribution</div></div>
+        <div style="padding:18px 20px 14px"><div class="pchart" id="pchart"></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct" style="font-size:14px;font-weight:700;text-transform:none;letter-spacing:0">Risk Score &gt; 2.0</div><div class="cm" id="esc-m"></div></div>
+        <table><thead><tr><th>#</th><th>Change</th><th>Risk</th><th>Progress</th><th>Cost</th></tr></thead>
+        <tbody id="esc-tb"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="s-decide">
+    <div class="info-banner">New changes requiring a CRB decision: cost &gt; CHF 20k OR Business Critical / Safety. On Hold excluded.</div>
+    <div class="card">
+      <div class="ch"><div class="ct">Pending CRB Decision &middot; Strategic Relevance</div><div class="cm" id="dec-m"></div></div>
+      <table><thead><tr><th>#</th><th>Description</th><th>Priority</th><th>Progress</th><th>Risk</th><th>Target Date</th><th>Cost</th><th>PM / R&amp;D</th></tr></thead>
+      <tbody id="dec-tb"></tbody></table>
+    </div>
+  </div>
+
+  <div class="sec" id="s-risk">
+    <div class="alert">&#9650; All changes with risk score &gt; 2.0 &mdash; attention required.</div>
+    <div class="card">
+      <div class="ch"><div class="ct">Top Risk Assessment &middot; Escalation</div><div class="cm" id="risk-m"></div></div>
+      <table><thead><tr><th>#</th><th>Description</th><th>Priority</th><th>Progress</th><th>Risk</th><th>Target Date</th><th>Cost</th><th>PM / R&amp;D</th></tr></thead>
+      <tbody id="risk-tb"></tbody></table>
+    </div>
+  </div>
+
+  <div class="sec" id="s-safety">
+    <div class="card">
+      <div class="ch"><div class="ct">Safety / Compliance &middot; Priority 1</div><div class="cm" id="saf-m"></div></div>
+      <table><thead><tr><th>#</th><th>Description</th><th>Priority</th><th>Progress</th><th>Risk</th><th>Target Date</th><th>Cost</th><th>PM / R&amp;D</th></tr></thead>
+      <tbody id="saf-tb"></tbody></table>
+    </div>
+  </div>
+
+  <div class="sec" id="s-all">
+    <div class="card">
+      <div class="ch">
+        <div class="ct">All Active Changes &middot; Status Go</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="cm" id="all-m"></span>
+          <button class="fb" id="rs-prog" onclick="rSort('prog',this)">Progress &uarr;</button>
+          <button class="fb" id="rs-risk" onclick="rSort('risk',this)">Risk &darr;</button>
+          <button class="fb" id="rs-date" onclick="rSort('date',this)">Date</button>
+        </div>
+      </div>
+      <table><thead><tr><th>#</th><th>Description</th><th>Priority</th><th>Progress</th><th>Risk</th><th>Target Date</th><th>Cost</th><th>PM / R&amp;D</th></tr></thead>
+      <tbody id="all-tb"></tbody></table>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="ov" onclick="maybeClose(event)">
+  <div class="dp" id="dp">
+    <div class="dph">
+      <button class="dpx" onclick="closeDP()">&times;</button>
+      <div class="dpnum" id="dp-num"></div>
+      <div class="dptit" id="dp-tit"></div>
+      <div class="dpbdg" id="dp-bdg"></div>
+    </div>
+    <div class="dpbody" id="dp-body"></div>
+  </div>
+</div>
+
+<script>
+var DEFAULT=[{"num": 3, "id": "49462317", "desc": "Alleima stops wire Production, 50% of all Fuses", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Circuit Protection", "sg": "Fuses", "prog": 50, "crb": "Go", "pm": "Alvon Salvador", "rd": "Reto Schmid", "strategic": "Business Critical", "risk": 2.3, "cost": 80000, "lt": 24, "target": "31.07.2026", "entry": "29.10.2025", "actionExt": "FAI processing, 80% done (Elschukom) New Supplier (Brixiflex) for remaining 20% (Ni Wires) FAI ongoing", "adateExt": "31.05.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E3", "effort": 80}, {"num": 4, "id": "49462318", "desc": "AT&S Sub Supplier Change, 90% of all Chipfuses", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Circuit Protection", "sg": "Fuses", "prog": 60, "crb": "Go", "pm": "Alvon Salvador", "rd": "Arbnor Hoti", "strategic": "Business Critical", "risk": 3.0, "cost": 50000, "lt": 30, "target": "01.04.2026", "entry": "29.10.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Technical release of USF 0603, USF 1206, UST 10-15A, preparetion of USI release RISK: USI 1A  -> 10xIn not passed -> Investigation and analysis of the error", "adate": "16.05.2026", "ctype": "E3", "effort": 50}, {"num": 9, "id": "49462323", "desc": "Change of mounting equipment to Lead Free for T11", "origin": "PM / Sales", "prio": "1", "pg": "Circuit Breakers", "sg": "All", "prog": 10, "crb": "Go", "pm": "Josef Schuler", "rd": "Petr Hubacek", "strategic": "Strategic", "risk": 1.3, "cost": 6000, "lt": 28, "target": "30.06.2027", "entry": "29.10.2025", "actionExt": "Stock Disposition -->  Josef PCN Anouncement", "adateExt": "", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E3", "effort": 10}, {"num": 11, "id": "49462325", "desc": "Isolation Material Change - Sticky vs. Non Sticky - T11", "origin": "Production / Operations", "prio": "1", "pg": "Circuit Breakers", "sg": "Thermal", "prog": 50, "crb": "Go", "pm": "Josef Schuler", "rd": "Petr Hubacek", "strategic": "Minor Improvement", "risk": 1.3, "cost": 37000, "lt": 35, "target": "30.06.2026", "entry": "29.10.2025", "actionExt": "The supplier was repeatedly requested for investigation of adding adhesive layer and offering it to Schurter.", "adateExt": "29.04.2026", "actionPM": "", "adatePM": "", "action": "Test Sequence Analysis R&D, W tested 2 Variants in SAG Laboratory. There was NOK result for suggested variants. There is option to use glue stripe but this will create oncost.", "adate": "29.04.2026", "ctype": "E2", "effort": 80}, {"num": 13, "id": "49462326", "desc": "Production Transfer - SSRO to SEC -  (Janohig - 315 P/N)", "origin": "Management Decision", "prio": "3", "pg": "EMC Filters", "sg": "Transformers", "prog": 15, "crb": "Go", "pm": "Herbert Blum", "rd": "Severin Ryser", "strategic": "Strategic", "risk": 3.0, "cost": 220000, "lt": 56, "target": "31.12.2025", "entry": "30.10.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "According Taskforce Plan -> Lead: Mika TPR transfer to SEC", "adate": "", "ctype": "E3", "effort": 220}, {"num": 14, "id": "49462327", "desc": "Prod. Transfer Mendrisio to SSRO (CWAT - 14 P/N)", "origin": "Management Decision", "prio": "4", "pg": "EMC Filters", "sg": "3-phase Filters", "prog": 30, "crb": "Go", "pm": "Herbert Blum", "rd": "Severin Ryser", "strategic": "Strategic", "risk": 3.0, "cost": 10000, "lt": 11, "target": "31.12.2025", "entry": "30.10.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "FAI Measurements", "adate": "09.01.2026", "ctype": "E1", "effort": 10}, {"num": 16, "id": "49462329", "desc": "CCC Approval for 2573, 2563 and 1621, Include Stamp", "origin": "PM / Sales", "prio": "5", "pg": "Connectors", "sg": "IEC Connectors", "prog": 60, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Patrick Gruber", "strategic": "Strategic", "risk": 1.3, "cost": 31000, "lt": 31, "target": "31.07.2026", "entry": "03.11.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Obtain samples", "adate": "10.05.2026", "ctype": "E2", "effort": 11}, {"num": 17, "id": "49462330", "desc": "CCC Approval for DD21", "origin": "PM / Sales", "prio": "5", "pg": "Power Entry Modules", "sg": "Without filter", "prog": 80, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Bekim Ismaili", "strategic": "Strategic", "risk": 1.7, "cost": 8000, "lt": 29, "target": "31.07.2026", "entry": "03.11.2025", "actionExt": "Certification @CCC ongoing", "adateExt": "15.05.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E2", "effort": 4}, {"num": 18, "id": "49462331", "desc": "V-Lock integration GSF1, New Tool", "origin": "PM / Sales", "prio": "5", "pg": "Power Entry Modules", "sg": "Without filter", "prog": 65, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Bekim Ismaili", "strategic": "Strategic", "risk": 1.7, "cost": 41000, "lt": 28, "target": "31.06.2026", "entry": "04.11.2025", "actionExt": "Tooling: Trail run with new V-Lock mechanism -> postponed to 5.5.26 due to priorities -> decision meeting postponed to 6.5.26 SCM: Safety Stock for 6 months for the transfer in progress -> check if the quatity is suitable also for the tool modification", "adateExt": "06.05.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E2", "effort": 30}, {"num": 19, "id": "49462332", "desc": "Variosystem to 3 Party, FOAB & FOAD (Rational)", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "EMC Filters", "sg": "3-phase Filters", "prog": 80, "crb": "Go", "pm": "Herbert Blum", "rd": "Fabian Rescalli", "strategic": "Strategic", "risk": 2.3, "cost": 35000, "lt": 28, "target": "30.03.2026", "entry": "06.11.2025", "actionExt": "UL Supplier Audit, PPAP 3 ongoing", "adateExt": "30.06.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E2", "effort": 30}, {"num": 20, "id": "49462333", "desc": "Teilprojekt: SWZ, SWM from Duro- to Thermoplast", "origin": "PM / Sales", "prio": "3", "pg": "Switches", "sg": "Mechanical Selector", "prog": 60, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Sarina Wiederkehr", "strategic": "Strategic", "risk": 1.0, "cost": 220000, "lt": 95, "target": "15.01.2027", "entry": "07.11.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Tests on Serial Parts and Analysis of Problems", "adate": "07.05.2026", "ctype": "E2", "effort": 100}, {"num": 21, "id": "49462334", "desc": "Integration of V-Lock Notch milling in the BOM", "origin": "Production / Operations", "prio": "4", "pg": "Power Entry Modules", "sg": "Without filter", "prog": 98, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Bekim Ismaili", "strategic": "Strategic", "risk": 1.0, "cost": 5000, "lt": 11, "target": "29.01.2026", "entry": "13.11.2025", "actionExt": "SSRO: Built up MBOMs and confirm CO's to be completed", "adateExt": "05.05.2026", "actionPM": "", "adatePM": "", "action": "Close CBM task", "adate": "06.05.2026", "ctype": "E1", "effort": 5}, {"num": 22, "id": "49462335", "desc": "6048 - New Tool", "origin": "Production / Operations", "prio": "3", "pg": "Connectors", "sg": "IEC Connectors", "prog": 60, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Patrick Gruber", "strategic": "Strategic", "risk": 1.0, "cost": 27000, "lt": 31, "target": "30.04.2026", "entry": "13.11.2025", "actionExt": "Assembly manufacturing", "adateExt": "15.04.2026", "actionPM": "", "adatePM": "", "action": "Inspect Samples", "adate": "20.04.2026", "ctype": "E2", "effort": 12}, {"num": 23, "id": "49462336", "desc": "1658 - New Tool - VDE failing", "origin": "Compliance / Regulatory", "prio": "1", "pg": "Connectors", "sg": "Appliance Outlets", "prog": 50, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Patrick Gruber", "strategic": "Strategic", "risk": 1.3, "cost": 34000, "lt": 75, "target": "01.06.2026", "entry": "13.11.2025", "actionExt": "Currently fixing one cavity", "adateExt": "10.04.2026", "actionPM": "", "adatePM": "", "action": "Inspect Samples", "adate": "20.04.2026", "ctype": "E4", "effort": 20}, {"num": 24, "id": "49462337", "desc": "FD2 - Fuse Drawer (New SAG Plastic Tool)", "origin": "Production / Operations", "prio": "5", "pg": "Accessories Others", "sg": "Mounting Accessories", "prog": 90, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Patrick Gruber", "strategic": "Minor Improvement", "risk": 1.0, "cost": 20000, "lt": 21, "target": "01.04.2026", "entry": "13.11.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Validation of prototypes, Patrick", "adate": "01.05.2026", "ctype": "E2", "effort": 10}, {"num": 25, "id": "49462338", "desc": "FD2 - Contact Spring (SAG Tool Modification)", "origin": "Production / Operations", "prio": "3", "pg": "Accessories Others", "sg": "Mounting Accessories", "prog": 70, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Patrick Gruber", "strategic": "Strategic", "risk": 1.0, "cost": 15000, "lt": 21, "target": "01.04.2026", "entry": "13.11.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Validation of prototypes, Patrick", "adate": "01.05.2026", "ctype": "E2", "effort": 10}, {"num": 27, "id": "49462340", "desc": "KTC Approval on 6600 Series", "origin": "Management Decision", "prio": "3", "pg": "Connectors", "sg": "IEC Connectors", "prog": 60, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Patrick Gruber", "strategic": "Minor Improvement", "risk": 1.0, "cost": 23000, "lt": 9, "target": "01.03.2026", "entry": "13.11.2025", "actionExt": "FAI release TC (PE)", "adateExt": "20.04.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E2", "effort": 8}, {"num": 38, "id": "49462351", "desc": "FEU cap: material (Thermoplast) change for new molding tool", "origin": "Production / Operations", "prio": "4", "pg": "Circuit Protection", "sg": "Fuseholders", "prog": 50, "crb": "Go", "pm": "Josef Schuler", "rd": "Patrick Gruber", "strategic": "Minor Improvement", "risk": 2.3, "cost": 25300, "lt": 20, "target": "30.05.2026", "entry": "03.12.2025", "actionExt": "final tool trial at hot runner supplier (Alain), otherwise stop material change", "adateExt": "25.05.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E3", "effort": 8}, {"num": 39, "id": "49462352", "desc": "OG clip (0751.0232, customized) - change of packaging (SEI)", "origin": "PM / Sales", "prio": "3", "pg": "Circuit Protection", "sg": "Fuseholders", "prog": 10, "crb": "Go", "pm": "Josef Schuler", "rd": "Vasim Mansuri", "strategic": "Minor Improvement", "risk": 1.3, "cost": 600, "lt": 6, "target": "31.01.2026", "entry": "03.12.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "CBM", "adate": "12.12.2025", "ctype": "E2", "effort": 3}, {"num": 41, "id": "49462354", "desc": "FDI 6.3x32: improve crimp contacts for CE delcaration (SEI)", "origin": "Design / R&D", "prio": "5", "pg": "Circuit Protection", "sg": "Fuseholders", "prog": 20, "crb": "Go", "pm": "Josef Schuler", "rd": "Vasim Mansuri", "strategic": "Minor Improvement", "risk": 1.0, "cost": 1000, "lt": 6, "target": "31.12.2026", "entry": "03.12.2025", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "improve design/process (Vasim)", "adate": "12.12.2025", "ctype": "E3", "effort": 5}, {"num": 44, "id": "49462357", "desc": "Rail Filter - Rework Product Documentation (Variosys.)", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "EMC Filters", "sg": "Single-phase Filters", "prog": 60, "crb": "Go", "pm": "Herbert Blum", "rd": "Fabian Rescalli", "strategic": "Strategic", "risk": 2.3, "cost": 75000, "lt": 30, "target": "28.06.2026", "entry": "11.12.2025", "actionExt": "SSRO: Material sourcing, building EMP Samples", "adateExt": "30.05.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E1", "effort": 50}, {"num": 45, "id": "49462358", "desc": "Metal Line - Rework Product Documentation (Variosys.)", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Switches", "sg": "Push Button Switches", "prog": 70, "crb": "Go", "pm": "Anette Riedl-Materna", "rd": "Fabian Rescalli", "strategic": "Strategic", "risk": 2.3, "cost": 15000, "lt": 16, "target": "28.06.2026", "entry": "11.12.2025", "actionExt": "SSRO: RFQ --> ordering --> EMP", "adateExt": "28.06.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E1", "effort": 10}, {"num": 46, "id": "49462359", "desc": "TA45 Relais - Rework Product Documentation (Variosys.)", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Circuit Breakers", "sg": "Resettable", "prog": 60, "crb": "Go", "pm": "Josef Schuler", "rd": "Marc Buholzer", "strategic": "Strategic", "risk": 2.3, "cost": 75000, "lt": 30, "target": "30.01.2026", "entry": "11.12.2025", "actionExt": "Prepare for Production - FAI", "adateExt": "08.05.2026", "actionPM": "", "adatePM": "", "action": "Make PCB ECAD and MCAD.", "adate": "08.05.2026", "ctype": "E1", "effort": 50}, {"num": 47, "id": "49462360", "desc": "New solution-D7 switch 3-138-461 (0041.1640 from Marquardt)", "origin": "Quality / Testing", "prio": "2", "pg": "Power Entry Modules", "sg": "Without filter", "prog": 85, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Bekim Ismaili", "strategic": "Strategic", "risk": 2.0, "cost": 10000, "lt": 16, "target": "21.05.2026", "entry": "11.12.2025", "actionExt": "Purchasing: Check commercial impact for change before implementation", "adateExt": "30.04.2026", "actionPM": "", "adatePM": "", "action": "Organize a decision meeting with Operations about implementation", "adate": "08.05.2026", "ctype": "E2", "effort": 10}, {"num": 48, "id": "49462361", "desc": "Seisreiner closure --> New supplier", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Switches", "sg": "All", "prog": 10, "crb": "Go", "pm": "Anette Riedl-Materna", "rd": "Louis Frank", "strategic": "Strategic", "risk": 2.7, "cost": 20000, "lt": 19, "target": "30.06.2026", "entry": "17.12.2025", "actionExt": "New Supplier visits, w support of R&D", "adateExt": "31.05.2026", "actionPM": "", "adatePM": "", "action": "Create acceptance criteria catalogs with PM support Definition of Risk article", "adate": "22.05.2026", "ctype": "E2", "effort": 10}, {"num": 49, "id": "49462362", "desc": "IEC dummy fuse cap - design change (new std) + lead free", "origin": "Quality / Testing", "prio": "3", "pg": "Circuit Protection", "sg": "Fuseholders", "prog": 20, "crb": "Go", "pm": "Josef Schuler", "rd": "Petr Hubacek", "strategic": "Strategic", "risk": 1.7, "cost": 2000, "lt": 14, "target": "31.03.2026", "entry": "06.01.2026", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "CN released, find new supplier (after Seisreiner) after order", "adate": "29.05.2026", "ctype": "E3", "effort": 2}, {"num": 50, "id": "49462363", "desc": "PTFE Coating of Calibration Scew", "origin": "Production / Operations", "prio": "2", "pg": "Circuit Breakers", "sg": "Thermal", "prog": 90, "crb": "Go", "pm": "Josef Schuler", "rd": "Petr Hubacek", "strategic": "Minor Improvement", "risk": 1.7, "cost": 7000, "lt": 7, "target": "27.03.2026", "entry": "28.01.2026", "actionExt": "Supplier provided description of the change.", "adateExt": "", "actionPM": "", "adatePM": "", "action": "EMP 150k of Sample - Production/Eng.- Report. When EMP ok, a new revision of the srew will be release in tem center.", "adate": "28.04.2026", "ctype": "E2", "effort": 5}, {"num": 53, "id": "49462366", "desc": "Weight Rollup Readiness Guideline TA35/36/45", "origin": "Design / R&D", "prio": "2", "pg": "Circuit Breakers", "sg": "Resettable", "prog": 15, "crb": "Go", "pm": "Josef Schuler", "rd": "Marc Buholzer", "strategic": "Minor Improvement", "risk": 1.0, "cost": 10000, "lt": 0, "target": "30.05.2026", "entry": "26.02.2026", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Design Change", "adate": "08.05.2026", "ctype": "E1", "effort": 10}, {"num": 59, "id": "49462372", "desc": "Update Engineering Documentation Block 3&4 - Project SWAN", "origin": "Production / Operations", "prio": "4", "pg": "Multi-category", "sg": "", "prog": 40, "crb": "Go", "pm": "Diverse", "rd": "Jascha Marbach", "strategic": "Strategic", "risk": 2.0, "cost": 153000, "lt": 44, "target": "30.04.2026", "entry": "05.03.2026", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "update drawing", "adate": "01.05.2026", "ctype": "E2", "effort": 53}, {"num": 60, "id": "49462373", "desc": "Update Engineering Documentation Block 5&6&7 - Project SWAN", "origin": "Production / Operations", "prio": "4", "pg": "Multi-category", "sg": "", "prog": 10, "crb": "Go", "pm": "Diverse", "rd": "Jascha Marbach", "strategic": "Strategic", "risk": 2.0, "cost": 116000, "lt": 42, "target": "15.06.2026", "entry": "05.03.2026", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "evaluation of data and obsolete parts", "adate": "29.05.2026", "ctype": "E2", "effort": 36}, {"num": 61, "id": "49462374", "desc": "USFF 1206 - Material Change for 125mA", "origin": "Quality / Testing", "prio": "2", "pg": "Circuit Protection", "sg": "Fuses", "prog": 20, "crb": "Go", "pm": "Alvin Salvador", "rd": "Arbnor Hoti", "strategic": "Minor Improvement", "risk": 1.3, "cost": 10000, "lt": 20, "target": "31.07.2026", "entry": "12.03.2026", "actionExt": "Ops builds Samples", "adateExt": "18.05.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E4", "effort": 10}, {"num": 62, "id": "49462375", "desc": "Chip fuse - 2nd source", "origin": "Supply Chain / Procurement", "prio": "4", "pg": "Circuit Protection", "sg": "Fuses", "prog": 20, "crb": "Go", "pm": "Alvin Salvador", "rd": "Arbnor Hoti", "strategic": "Strategic", "risk": 1.7, "cost": 2000, "lt": 36, "target": "30.04.2026", "entry": "12.03.2026", "actionExt": "New suppliers are beeing contacted", "adateExt": "30.03.2026", "actionPM": "", "adatePM": "", "action": "Preparation of an overview of technical and manufacturing challenges", "adate": "28.04.2026", "ctype": "E1", "effort": 2}, {"num": 63, "id": "49462376", "desc": "Tripping Characteristic Change of E-0812", "origin": "Cost / Finance", "prio": "4", "pg": "Circuit Breakers", "sg": "Thermal", "prog": 10, "crb": "Go", "pm": "Josef Schuler", "rd": "Jascha Marbach", "strategic": "Minor Improvement", "risk": 1.0, "cost": 1000, "lt": 16, "target": "24.04.2026", "entry": "12.03.2026", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Tripping Characteristic Change of E-0812", "adate": "01.05.2026", "ctype": "E1", "effort": 1}, {"num": 64, "id": "49462377", "desc": "Material Change OMx125 housing (Xinomer)", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Circuit Protection", "sg": "Fuses", "prog": 25, "crb": "Go", "pm": "Alvin Salvador", "rd": "Reto Schmid", "strategic": "Strategic", "risk": 2.0, "cost": 20000, "lt": 27, "target": "30.08.2026", "entry": "19.03.2026", "actionExt": "SCM: Waiting for quote of certified material (V0)", "adateExt": "30.05.2026", "actionPM": "", "adatePM": "", "action": "", "adate": "", "ctype": "E3", "effort": 10}, {"num": 65, "id": "49462378", "desc": "T13 Material Change of 0858.2721301.4", "origin": "Production / Operations", "prio": "3", "pg": "Circuit Breakers", "sg": "Thermal", "prog": 40, "crb": "Go", "pm": "Josef Schuler", "rd": "Petr Hubacek", "strategic": "Strategic", "risk": 1.3, "cost": 0, "lt": 0, "target": "01.04.2028", "entry": "23.03.2026", "actionExt": "Operations  calculation for the Tool Investment and production cost", "adateExt": "16.10.2026", "actionPM": "", "adatePM": "", "action": "-", "adate": "", "ctype": "", "effort": 0}, {"num": 66, "id": "49462379", "desc": "Teilprojekt: SWA from Duro- to Thermoplast", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Switches", "sg": "Mechanical Selector", "prog": 60, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Marc Buholzer", "strategic": "Strategic", "risk": 1.0, "cost": 220000, "lt": 95, "target": "01.04.2028", "entry": "07.11.2025", "actionExt": "", "adateExt": "", "actionPM": "Validation of Serie Parts", "adatePM": "30.03.2026", "action": "Prepare all variants to be tested (documenting)", "adate": "08.05.2026", "ctype": "E2", "effort": 100}, {"num": 67, "id": "49462380", "desc": "Teilprojekt:SWP from Duro- to Thermoplast", "origin": "Supply Chain / Procurement", "prio": "3", "pg": "Switches", "sg": "Mechanical Selector", "prog": 40, "crb": "Go", "pm": "Elisabeth Gassmann", "rd": "Jascha Marbach", "strategic": "Strategic", "risk": 1.0, "cost": 220000, "lt": 95, "target": "30.03.2025", "entry": "07.11.2025", "actionExt": "Dureathan EMP Assembly Trial and Functional Testing", "adateExt": "15.05.2026", "actionPM": "Validation of Serie Parts", "adatePM": "30.03.2026", "action": "", "adate": "", "ctype": "E2", "effort": 100}, {"num": 69, "id": "49462382", "desc": "Transfer plastic parts - Project Pelican Block II", "origin": "Production / Operations", "prio": "4", "pg": "Multi-category", "sg": "", "prog": 0, "crb": "Preparation", "pm": "Diverse", "rd": "Bekim Ismaili", "strategic": "Strategic", "risk": 1.0, "cost": 94000, "lt": 0, "target": "30.09.2026", "entry": "28.04.2026", "actionExt": "", "adateExt": "", "actionPM": "", "adatePM": "", "action": "Define Prüfmasse on drawings", "adate": "05.05.2026", "ctype": "E2", "effort": 44}];
+
+const PL={'1':'Safety/Compliance','2':'Quality','3':'Delivery','4':'Cost','5':'Growth'};
+const PC={'1':'var(--s-red)','2':'var(--s-amber)','3':'var(--s-blue-dark)','4':'var(--s-teal)','5':'var(--s-purple)'};
+const PB={'1':'b1','2':'b2','3':'b3','4':'b4','5':'b5'};
+
+let DATA=DEFAULT;
+let GF={prio:'all',pm:'all',rd:'all'};
+let RSORT='prog';
+
+const fc=v=>{if(!v&&v!==0)return'—';if(v>=1e6)return'CHF '+(v/1e6).toFixed(1)+'M';if(v>=1000)return'CHF '+(v/1000).toFixed(0)+'k';return v?'CHF '+v:'—'};
+const rdot=r=>r>=2.5?'rhi':r>=2.0?'rme':'rlo';
+const rnum=r=>r>=2.5?'rnhi':r>=2.0?'rnme':'rnlo';
+const pcol=p=>p>=75?'var(--s-green)':p>=35?'var(--s-amber)':'var(--s-red)';
+
+function dclass(d){
+  if(!d||d==='—'||d==='No Target Date!')return'dno';
+  const p=d.split('.');if(p.length<3)return'dno';
+  const dt=new Date(+p[2],+p[1]-1,+p[0]);if(isNaN(dt))return'dno';
+  const diff=(dt-new Date())/864e5;
+  return diff<0?'dov':diff<45?'dsn':'dok';
+}
+const ds=d=>'<span class="dc '+dclass(d)+'">'+(d||'—')+'</span>';
+const nd=n=>'<tr class="nd"><td colspan="'+n+'">No changes match the current filters</td></tr>';
+
+function shortName(n){
+  if(!n||n==='Diverse'||n==='—')return n||'—';
+  const parts=n.trim().split(/\s+/);
+  if(parts.length<2)return n;
+  return parts[0][0]+'.'+parts.slice(1).join(' ');
+}
+
+function filtered(){
+  const s=document.getElementById('gsrch').value.toLowerCase();
+  return DATA.filter(c=>{
+    if(GF.prio!=='all'&&c.prio!==GF.prio)return false;
+    if(GF.pm!=='all'&&c.pm!==GF.pm)return false;
+    if(GF.rd!=='all'&&c.rd!==GF.rd)return false;
+    if(s&&!c.desc.toLowerCase().includes(s)&&!(c.pg||'').toLowerCase().includes(s)&&!(c.pm||'').toLowerCase().includes(s)&&!(c.rd||'').toLowerCase().includes(s))return false;
+    return true;
+  });
+}
+
+function gfilt(type,val,btn){
+  GF[type]=val;
+  document.querySelectorAll('#gfilter .fgroup .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+function gfiltSel(type,sel){
+  GF[type]=sel.value;
+  sel.classList.toggle('active',sel.value!=='all');
+  render();
+}
+
+function init(data){
+  DATA=data;
+  GF={prio:'all',pm:'all',rd:'all'};
+  const pms=[...new Set(data.map(c=>c.pm).filter(Boolean))].sort();
+  const pmSel=document.getElementById('pm-sel');
+  pmSel.innerHTML='<option value="all">All PMs</option>';
+  pms.forEach(pm=>{const o=document.createElement('option');o.value=pm;o.textContent=shortName(pm);pmSel.appendChild(o);});
+  const rds=[...new Set(data.map(c=>c.rd).filter(Boolean))].sort();
+  const rdSel=document.getElementById('rd-sel');
+  rdSel.innerHTML='<option value="all">All R&D</option>';
+  rds.forEach(rd=>{const o=document.createElement('option');o.value=rd;o.textContent=shortName(rd);rdSel.appendChild(o);});
+  render();
+}
+
+function render(){
+  const vis=filtered();
+  const decide=vis.filter(c=>c.crb==='Preparation'&&(c.cost>20000||c.strategic==='Business Critical'));
+  const highRisk=vis.filter(c=>c.risk>2.0);
+  const safety=vis.filter(c=>c.prio==='1');
+  const goChanges=vis.filter(c=>c.crb==='Go');
+  const avgP=goChanges.length?Math.round(goChanges.reduce((s,c)=>s+c.prog,0)/goChanges.length):0;
+  const totCost=vis.reduce((s,c)=>s+(c.cost||0),0);
+
+  document.getElementById('kv-a').textContent=vis.length;
+  document.getElementById('kv-r').textContent=highRisk.length;
+  document.getElementById('kv-d').textContent=decide.length;
+  document.getElementById('kv-p').textContent=avgP+'%';
+  document.getElementById('kv-c').textContent=fc(totCost);
+  document.getElementById('cnt-d').textContent=decide.length?'('+decide.length+')':'';
+  document.getElementById('cnt-hi').textContent=highRisk.length?'('+highRisk.length+')':'';
+  document.getElementById('cnt-s').textContent=safety.length?'('+safety.length+')':'';
+
+  const ab=document.getElementById('alert-box');
+  const stuck=vis.filter(c=>c.prio==='1'&&c.prog===0);
+  if(stuck.length){ab.style.display='block';ab.textContent='▲ '+stuck.length+' Safety/Compliance change(s) at 0% — follow up: '+stuck.map(c=>'#'+c.num).join(', ');}
+  else ab.style.display='none';
+
+  buildChart(vis);
+  buildEsc(vis.filter(c=>c.risk>=2.0));
+  buildDecide(decide);
+  buildRisk(highRisk);
+  buildSafety(safety);
+  buildAll(vis, RSORT);
+}
+
+function buildChart(vis){
+  const cnt={'1':0,'2':0,'3':0,'4':0,'5':0};
+  vis.forEach(c=>{cnt[c.prio]=(cnt[c.prio]||0)+1;});
+  const mx=Math.max(...Object.values(cnt))||1;
+  const labels=['','Safety','Quality','Delivery','Cost','Growth'];
+  document.getElementById('pchart').innerHTML=Object.entries(cnt).map(([p,v])=>
+    '<div class="pcol">'+
+    '<div class="pval">'+v+'</div>'+
+    '<div style="width:100%;display:flex;align-items:flex-end;height:110px">'+
+    '<div class="pbar" style="height:'+Math.max(4,Math.round(v/mx*100))+'px;background:'+PC[p]+';opacity:.82;width:100%"></div>'+
+    '</div>'+
+    '<div class="plbl">'+labels[+p]+'</div>'+
+    '</div>'
+  ).join('');
+}
+
+function buildEsc(data){
+  const d=[...data].sort((a,b)=>b.risk-a.risk);
+  document.getElementById('esc-m').textContent=d.length+' items';
+  document.getElementById('esc-tb').innerHTML=d.length?d.map(c=>
+    '<tr onclick="openDP('+c.num+')">'+
+    '<td class="idc">#'+c.num+'</td>'+
+    '<td><div class="dm">'+c.desc+'</div><div class="ds">'+(c.pg||'')+'</div></td>'+
+    '<td><div class="rc"><span class="rd2 '+rdot(c.risk)+'"></span><span class="'+rnum(c.risk)+'">'+c.risk+'</span></div></td>'+
+    '<td><div class="pw"><div class="pb"><div class="pf" style="width:'+c.prog+'%;background:'+pcol(c.prog)+'"></div></div><span class="pp">'+c.prog+'%</span></div></td>'+
+    '<td class="cc">'+fc(c.cost)+'</td>'+
+    '</tr>'
+  ).join(''):nd(5);
+}
+
+function buildDecide(data){
+  document.getElementById('dec-m').textContent=data.length+' pending';
+  document.getElementById('dec-tb').innerHTML=data.length?data.map(c=>rowFull(c)).join(''):nd(8);
+}
+
+function buildRisk(data){
+  const d=[...data].sort((a,b)=>b.risk-a.risk);
+  document.getElementById('risk-m').textContent=d.length+' items';
+  document.getElementById('risk-tb').innerHTML=d.length?d.map(c=>rowFull(c)).join(''):nd(8);
+}
+
+function buildSafety(data){
+  document.getElementById('saf-m').textContent=data.length+' changes';
+  document.getElementById('saf-tb').innerHTML=data.length?data.map(c=>rowFull(c)).join(''):nd(8);
+}
+
+function rSort(k,btn){
+  RSORT=k;
+  document.querySelectorAll('#s-all .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  buildAll(filtered(),k);
+}
+
+function buildAll(data,sort){
+  let d=[...data];
+  if(sort==='prog')d.sort((a,b)=>a.prog-b.prog);
+  else if(sort==='risk')d.sort((a,b)=>b.risk-a.risk);
+  else d.sort((a,b)=>{
+    const pa=(a.target||'').split('.'),pb2=(b.target||'').split('.');
+    if(pa.length<3)return 1;if(pb2.length<3)return -1;
+    return new Date(+pa[2],+pa[1]-1,+pa[0])-new Date(+pb2[2],+pb2[1]-1,+pb2[0]);
+  });
+  document.getElementById('all-m').textContent=d.length+' changes';
+  document.getElementById('all-tb').innerHTML=d.length?d.map(c=>rowFull(c)).join(''):nd(8);
+}
+
+function rowFull(c){
+  return '<tr onclick="openDP('+c.num+')">'+
+    '<td class="idc">#'+c.num+'</td>'+
+    '<td><div class="dm">'+c.desc+'</div><div class="ds">'+(c.pg||'')+(c.sg?' &middot; '+c.sg:'')+'</div></td>'+
+    '<td><span class="badge '+PB[c.prio]+'">'+PL[c.prio]+'</span></td>'+
+    '<td><div class="pw"><div class="pb"><div class="pf" style="width:'+c.prog+'%;background:'+pcol(c.prog)+'"></div></div><span class="pp">'+c.prog+'%</span></div></td>'+
+    '<td><div class="rc"><span class="rd2 '+rdot(c.risk)+'"></span><span class="'+rnum(c.risk)+'">'+c.risk+'</span></div></td>'+
+    '<td>'+ds(c.target)+'</td>'+
+    '<td class="cc">'+fc(c.cost)+'</td>'+
+    '<td class="oc"><span class="om">'+shortName(c.pm)+'</span><br><span class="os">'+shortName(c.rd)+'</span></td>'+
+    '</tr>';
+}
+
+function openDP(num){
+  const c=DATA.find(x=>x.num===num);if(!c)return;
+  document.getElementById('dp-num').textContent='#'+c.num+' \u00b7 '+c.id+(c.ctype?' \u00b7 '+c.ctype:'');
+  document.getElementById('dp-tit').textContent=c.desc;
+  document.getElementById('dp-bdg').innerHTML=
+    '<span class="badge '+PB[c.prio]+'">'+PL[c.prio]+'</span> '+
+    '<span class="badge bgo">'+(c.crb||'—')+'</span> '+
+    '<span class="badge" style="background:rgba(255,255,255,.15);color:#fff">'+(c.strategic||'—')+'</span>'+
+    (c.pg?'<span class="badge" style="background:rgba(255,255,255,.12);color:#fff;margin-left:4px">'+c.pg+'</span>':'');
+
+  let actions='';
+  if(c.actionExt)actions+='<div class="dpa"><div class="dpal">R&D External / SCM</div>'+c.actionExt+(c.adateExt?'<div style="margin-top:6px;font-size:11px">'+ds(c.adateExt)+'</div>':'')+'</div>';
+  if(c.actionPM)actions+='<div class="dpa"><div class="dpal">PM</div>'+c.actionPM+(c.adatePM?'<div style="margin-top:6px;font-size:11px">'+ds(c.adatePM)+'</div>':'')+'</div>';
+  if(c.action)actions+='<div class="dpa"><div class="dpal">R&D Internal</div>'+c.action+(c.adate?'<div style="margin-top:6px;font-size:11px">'+ds(c.adate)+'</div>':'')+'</div>';
+
+  document.getElementById('dp-body').innerHTML=
+    '<div class="dpsec">'+
+    '<div class="dpst">Progress &amp; Timeline</div>'+
+    '<div style="margin:8px 0 14px">'+
+    '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--s-text-muted);margin-bottom:5px"><span>Progress</span><span style="font-weight:700">'+c.prog+'%</span></div>'+
+    '<div style="height:8px;background:#e8eaed;border-radius:4px;overflow:hidden"><div style="width:'+c.prog+'%;height:100%;background:'+pcol(c.prog)+';border-radius:4px"></div></div>'+
+    '</div>'+
+    '<div class="dpr"><span class="dpk">Target Date</span><span class="dpv">'+ds(c.target)+'</span></div>'+
+    '<div class="dpr"><span class="dpk">Total Lead Time</span><span class="dpv">'+(c.lt>0?c.lt+' weeks':'—')+'</span></div>'+
+    '<div class="dpr"><span class="dpk">Date of Entry</span><span class="dpv">'+(c.entry||'—')+'</span></div>'+
+    '</div>'+
+    '<div class="dpsec">'+
+    '<div class="dpst">Responsibility</div>'+
+    '<div class="dpr"><span class="dpk">PM</span><span class="dpv">'+(c.pm||'—')+'</span></div>'+
+    '<div class="dpr"><span class="dpk">R&D</span><span class="dpv">'+(c.rd||'—')+'</span></div>'+
+    '<div class="dpr"><span class="dpk">Product Group</span><span class="dpv">'+(c.pg||'—')+(c.sg?' / '+c.sg:'')+'</span></div>'+
+    '<div class="dpr"><span class="dpk">Origin</span><span class="dpv">'+(c.origin||'—')+'</span></div>'+
+    '<div class="dpr"><span class="dpk">Change Type</span><span class="dpv">'+(c.ctype||'—')+'</span></div>'+
+    '</div>'+
+    '<div class="dpsec">'+
+    '<div class="dpst">Cost &amp; Effort</div>'+
+    '<div class="dpr"><span class="dpk">Effort</span><span class="dpv">'+(c.effort>0?c.effort+' person-days':'—')+'</span></div>'+
+    '<div class="dpr"><span class="dpk">Total Cost</span><span class="dpv" style="color:var(--s-blue-dark);font-size:16px;font-weight:700">'+fc(c.cost)+'</span></div>'+
+    '</div>'+
+    '<div class="dpsec">'+
+    '<div class="dpst">Risk Assessment</div>'+
+    '<div class="dpr"><span class="dpk">Risk Score</span><span class="dpv"><span class="'+rnum(c.risk)+'" style="font-size:18px">'+(c.risk||'—')+'</span></span></div>'+
+    '<div class="dpr"><span class="dpk">Strategic Relevance</span><span class="dpv">'+(c.strategic||'—')+'</span></div>'+
+    '</div>'+
+    (actions?'<div class="dpsec"><div class="dpst">Actions</div>'+actions+'</div>':'');
+
+  document.getElementById('ov').classList.add('open');
+}
+
+function maybeClose(e){if(e.target===document.getElementById('ov'))closeDP();}
+function closeDP(){document.getElementById('ov').classList.remove('open');}
+
+function showTab(name,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('s-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='all') buildAll(filtered(), RSORT);
+}
+
+document.getElementById('fi').addEventListener('change',function(e){
+  const file=e.target.files[0];if(!file)return;
+  const btn=document.getElementById('ubtn');
+  btn.textContent='Parsing\u2026';btn.classList.add('busy');
+  const fr=new FileReader();
+  fr.onload=ev=>{
+    try{
+      const parsed=parseCSV(ev.target.result);
+      if(parsed.length>0){
+        init(parsed);
+        document.getElementById('tsub').textContent='V2.0 \u00b7 '+new Date().toLocaleDateString('de-CH');
+        btn.textContent='\u2713 '+parsed.length+' changes';
+        setTimeout(()=>{btn.textContent='\u2191 Upload CSV';btn.classList.remove('busy');},3000);
+      } else {
+        btn.textContent='\u2191 Upload CSV';btn.classList.remove('busy');
+        alert('No active changes found in CSV.\n\nExpected semicolon-separated CSV from the Change Tracker Excel.');
+      }
+    }catch(err){btn.textContent='\u2191 Upload CSV';btn.classList.remove('busy');alert('Parse error: '+err.message);}
+  };
+  fr.readAsText(file,'latin-1');
+  this.value='';
+});
+
+function parseCSV(text){
+  const rows=[];let cur=[],field='',inQ=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i],nx=text[i+1];
+    if(inQ){if(ch==='"'&&nx==='"'){field+='"';i++;}else if(ch==='"'){inQ=false;}else field+=ch;}
+    else{if(ch==='"'){inQ=true;}else if(ch===';'){cur.push(field);field='';}else if(ch==='\r'&&nx==='\n'){cur.push(field);field='';rows.push(cur);cur=[];i++;}else if(ch==='\n'||ch==='\r'){cur.push(field);field='';rows.push(cur);cur=[];}else field+=ch;}
+  }
+  if(field||cur.length)cur.push(field);
+  if(cur.length>1)rows.push(cur);
+  let hIdx=-1;
+  for(let i=0;i<Math.min(rows.length,6);i++){if(rows[i].some(c=>c.includes('Active'))&&rows[i].some(c=>c.includes('CRB'))){hIdx=i;break;}}
+  if(hIdx<0)throw new Error('Header row not found');
+  function pn(s){s=(s||'').replace(/[\u2019']/g,'').replace(/\s/g,'').replace(',','.');var m=s.match(/[\d.]+/);return m?parseFloat(m[0]):0;}
+  function pi(s){s=(s||'').replace(/[\u2019'\s]/g,'');var m=s.match(/\d+/);return m?parseInt(m[0]):0;}
+  function pp(s){var m=(s||'').trim().match(/^(\d)/);return m?m[1]:'3';}
+  function sf(r,i){try{return(r[i]||'').replace(/[\r\n]+/g,' ').trim();}catch(e){return'';}}
+  const result=[];
+  for(let i=hIdx+1;i<rows.length;i++){
+    const r=rows[i];if(!r||r.length<16)continue;
+    if(sf(r,0)!=='Yes')continue;
+    const num=pi(sf(r,1));if(!num)continue;
+    const desc=sf(r,3);if(!desc)continue;
+    result.push({num:num,id:sf(r,2),desc:desc,origin:sf(r,4),prio:pp(sf(r,6)||'3'),pg:sf(r,8),sg:sf(r,9),
+      prog:Math.min(100,pi(sf(r,14))),crb:sf(r,15),pm:sf(r,17),rd:sf(r,18),strategic:sf(r,19),
+      risk:pn(sf(r,35)),cost:pi(sf(r,28)),lt:pi(sf(r,39)),target:sf(r,12),entry:sf(r,13),
+      actionExt:sf(r,40),adateExt:sf(r,41),actionPM:sf(r,42),adatePM:sf(r,43),
+      action:sf(r,44),adate:sf(r,45),ctype:sf(r,29).substring(0,3).trim(),effort:pi(sf(r,24))});
+  }
+  return result;
+}
+
+document.body.addEventListener('dragover',function(e){e.preventDefault();});
+document.body.addEventListener('drop',function(e){
+  e.preventDefault();
+  var f=e.dataTransfer.files[0];
+  if(f&&f.name.endsWith('.csv')){
+    var dt=new DataTransfer();dt.items.add(f);
+    document.getElementById('fi').files=dt.files;
+    document.getElementById('fi').dispatchEvent(new Event('change'));
+  }
+});
+
+window.addEventListener('load',function(){init(DEFAULT);});
+
+</script>
+</body>
+</html>
